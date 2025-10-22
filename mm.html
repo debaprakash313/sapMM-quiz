@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S&P Sourcing & Procurement Quiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f7f6;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #007bff;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .question-block {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 6px;
+            background-color: #ffffff;
+        }
+        .question-text {
+            font-weight: bold;
+            margin-bottom: 10px;
+            line-height: 1.5;
+            color: #212529;
+        }
+        .note {
+            font-style: italic;
+            color: #6c757d;
+            margin-bottom: 10px;
+            display: block;
+        }
+        .option-label {
+            display: block;
+            margin: 8px 0;
+            padding: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            border: 1px solid #e9ecef;
+        }
+        .option-label:hover {
+            background-color: #e2f0ff;
+        }
+        input[type="radio"], input[type="checkbox"] {
+            margin-right: 10px;
+        }
+        .submit-btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.1em;
+            cursor: pointer;
+            margin-top: 30px;
+            transition: background-color 0.3s;
+        }
+        .submit-btn:hover {
+            background-color: #218838;
+        }
+        #results {
+            margin-top: 30px;
+            padding: 20px;
+            border-top: 2px dashed #007bff;
+            text-align: center;
+            font-size: 1.2em;
+        }
+        .correct {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+        }
+        .incorrect {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+        .correct-answer-display {
+            margin-top: 5px;
+            font-weight: bold;
+            color: #155724;
+        }
+        .your-answer-display {
+            margin-top: 5px;
+            font-weight: bold;
+        }
+        .feedback {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>S&P Sourcing & Procurement Quiz</h1>
+        <form id="quizForm">
+            </form>
+        <button class="submit-btn" onclick="submitQuiz()">Submit Quiz</button>
+        <div id="results" class="hidden"></div>
+    </div>
+
+    <script>
+        // The quiz data array contains all questions, options, and correct answers from the PDF.
+        const quizData = [
+            {
+                q: "Where can you enter a rounding profile?",
+                note: "Note: There are 2 correct answers to this question.",
+                options: { A: "Lot-sizing procedure", B: "Purchasing info record", C: "Source list", D: "Material master" },
+                correct: ["B", "D"]
+            },
+            {
+                q: "What is the definition of an opening horizon?",
+                note: null,
+                options: { A: "The time available for the MRP run to convert a requirement into a schedule line or a planned order", B: "The time available for the MRP run to convert requirements into purchase requisitions or planned orders", C: "The time available for the MRP controller to convert a purchase requisition into a purchase order or a schedule line", D: "The time available for the MRP controller to convert a planned order into a purchase requisition or a production order" },
+                correct: ["D"]
+            },
+            {
+                q: "Which of the following procurement proposals can be created during an MRP Live planning run for externally procured materials?",
+                note: "Note: There are 2 correct answers to this question.",
+                options: { A: "Planned order", B: "Purchase order", C: "Delivery schedule line", D: "Purchase requisition" },
+                correct: ["C", "D"]
+            },
+            {
+                q: "Which of the following tasks does the system perform during reorder point planning?",
+                note: "Note: There are 2 correct answers to this question.",
+                options: { A: "Flag materials that have been subject to an activity relevant to MRP", B: "Carry out a lot-size calculation for every material with net requirements", C: "Carry out a net requirement calculation for every material included in the planning run", D: "Perform backward scheduling to determine the availability dates of purchase requisitions" },
+                correct: ["B", "C"]
+            },
+            {
+                q: "What does SAP S/4HANA use to determine the sequence in which materials are planned?",
+                note: null,
+                options: { A: "Source list", B: "MRP group", C: "Low-level code", D: "Quota arrangement" },
+                correct: ["C"]
+            },
+            {
+                q: "Which of the following does the material type control?",
+                note: "Note: There are 3 correct answers to this question.",
+                options: { A: "Procurement type of a material", B: "Batch requirement for a material", C: "Material number assignment", D: "Field selection in the material master", E: "Material availability check" },
+                correct: ["A", "C", "D"]
+            },
+            {
+                q: "Which of the following rules apply when configuring the enterprise structure?",
+                note: "Note: There are 3 correct answers to this question.",
+                options: { A: "The key of a storage location is unique within a company code.", B: "Several storage locations can be assigned to a plant.", C: "A plant can only be assigned to one company code.", D: "The key of a plant is unique within a client.", E: "A storage location can be assigned to several plants." },
+                correct: ["B", "C", "D"]
+            },
+            {
+                q: "Production planning and product costing are to be implemented in your company. Which organizational level must you choose for stock valuation?",
+                note: null,
+                options: { A: "Plant", B: "Company code", C: "Controlling area", D: "Business area" },
+                correct: ["A"]
+            },
+            {
+                q: "At which of the following organizational levels must you maintain a business partner master record for a supplier?",
+                note: "Note: There are 3 correct answers to this question.",
+                options: { A: "Plant", B: "Purchasing group", C: "Purchasing organization", D: "Company code", E: "Client" },
+                correct: ["A", "C", "D"] // Note: The source indicates A, C, D, but typical SAP master data is maintained at Client, Company Code, and Purchasing Organization. I will stick to the source (A, C, D).
+            },
+            {
+                q: "What are some characteristics of the material ledger?",
+                note: "Note: There are 3 correct answers to this question.",
+                options: { A: "It must be activated per controlling area.", B: "It is used to calculate different prices for material valuation.", C: "It is mandatory in SAP S/4HANA.", D: "It is used to valuate materials in different currencies.", E: "It is used to calculate the standard price." },
+                correct: ["B", "C", "D"]
+            },
+            {
+                q: "Which of the following factors can you use to control field attributes for a business partner?",
+                note: "Note: There are 3 correct answers to this question.",
+                options: { A: "Client", B: "Partner schema", C: "Business partner role", D: "Business partner type", E: "Business partner category" },
+                correct: ["A", "C", "D"] // Note: The source indicates A, C, D, but typical Business Partner configuration uses Role, Type, and Category. I will stick to the source (A, C, D).
+            },
+            {
+                q: "Your company wants to enable cross-purchasing organization procurement for some products to take advantage of centrally agreed conditions. Which entity do you need for this?",
+                note: null,
+                options: { A: "A purchasing group", B: "A reference purchasing organization", C: "A standard purchasing organization", D: "A purchasing team" },
+                correct: ["B"]
+            },
+            {
+                q: "Which field in the customizing of the material type controls whether a material can be used in the lean service process?",
+                note: null,
+                options: { A: "Material Type ID", B: "Field Reference", C: "Item Category Group", D: "Product Type Group" },
+                correct: ["D"]
+            },
+            {
+                q: "In your organizational structure, a single purchasing organization will operate across company codes. How must you assign the purchasing organization?",
+                note: null,
+                options: { A: "To the plants for which it is responsible", B: "To a standard purchasing organization", C: "To the company codes for which it is responsible", D: "To a reference purchasing organization" },
+                correct: ["A"]
+            },
+            {
+                q: "You use quota arrangements. You include a new supplier in an existing quota system. How can you ensure that the new supplier is considered as if they had been part of the quota arrangement from the beginning?",
+                note: null,
+                options: { A: "Manually update the source list", B: "Manually update the quota-allocated quantity", C: "Manually update the quota base quantity", D: "Manually update the quota" },
+                correct: ["C"]
+            },
+            {
+                q: "Your purchasing department is interested in working with scheduling agreements. What valid information can you share with them regarding release creation profiles?",
+                note: "Note: There are 3 correct answers to this question.",
+                options: { A: "A release creation profile triggers the creation of scheduling agreement schedule lines.", B: "You can enter a release creation profile in a purchasing info record.", C: "You can enter a release creation profile in the supplier master data.", D: "A release creation profile controls the aggregation of schedule line quantities in a delivery schedule.", E: "A release creation profile controls the periodicity of delivery schedule creation." },
+                correct: ["C", "D", "E"]
+            },
+            {
+                q: "Which of the following apply when using centrally agreed contracts?",
+                note: "Note: There are 2 correct answers to this question.",
+                options: { A: "You can use centrally agreed contracts in a procurement hub scenario.", B: "You can only create release orders for the central purchasing organization.", C: "You can maintain plant-specific conditions in centrally agreed contracts.", D: "You can use centrally agreed contracts without restrictions for any purchasing organization." },
+                correct: ["A", "C"]
+            },
+            {
+                q: "In Customizing, for which documents can you decide whether to use time-dependent conditions?",
+                note: "Note: There are 2 correct answers to this question.",
+                options: { A: "Purchase order", B: "Scheduling agreement", C: "Quotation", D: "Contract" },
+                correct: ["B", "C"]
+            },
+            {
+                q: "What must you do to implement split valuation?",
+                note: "Note: There are 2 correct answers to this question.",
+                options: { A: "Assign valuation types to stock types", B: "Add valuation types to all open purchase order items", C: "Create additional accounting data for the relevant materials", D: "Customize valuation categories and valuation types" },
+                correct: ["C", "D"]
+            },
+            {
+                q: "Which of the following can you do when customizing split valuation?",
+                note: "Note: There are 2 correct answers to this question.",
+                options: { A: "Assign an account category reference to a valuation type", B: "Assign valuation classes to a valuation category", C: "Assign a procurement type to a valuation type", D: "Specify price control for a valuation category" },
+                correct: ["A", "D"]
+            },
+            {
+                q: "There are multiple company codes and plants in your SAP S/4HANA system. You have set the valuation area to plant level. How can you reduce the effort to configure account determination?",
+                note: null,
+                options: { A: "You can use the valuation grouping code to group together plants assigned to company codes with different charts of accounts.", B: "You can use the account grouping code to group together plants assigned to company codes with the same chart of accounts.", C: "You can use the valuation grouping code to group together plants assigned to company codes with the same chart of accounts.", D: "You can use the account grouping code to group together plants assigned to company codes with different charts of accounts." },
+                correct: ["C"]
+            },
+            {
+                q: "You want to set up the same account determination for raw materials (material type ROH) and operating supplies (material type HIBE). How can you group these material types?",
+                note: null,
+                options: { A: "Assign the same account category reference to the material types", B: "Assign the same account modification to the material types", C: "Assign the same valuation grouping code to the material types", D: "Assign the same valuation class to the material types" },
+                correct: ["A"]
+            },
+            {
+                q: "When creating an invoice with purchase order reference, which options are available for the automatic posting of unplanned delivery costs?",
+                note: "Note: There are 2 correct answers to this question.",
+                options: { A: "Distribute among the invoice items.", B: "Post automatically in a separate invoice.", C: "Post to a separate account.", D: "Post to a freight clearing account." },
+                correct: ["A", "C"]
+            },
+            {
+                q: "How can you control the account determination for planned delivery costs based on the condition type?",
+                note: null,
+                options: { A: "Assign an account key in the condition record", B: "Assign an account key in the access sequence", C: "Assign an account key in the condition type", D: "Assign an account key in the calculation schema" },
+                correct: ["D"]
+            },
+            {
+                q: "For which of the following transactions do you receive an error message if the automatic account determination is set up incorrectly?",
+                note: "Note: There are 3 correct answers to this question.",
+                options: { A: "Transfer posting between stock types in one plant", B: "Goods receipt into blocked stock", C: "Stock transfer between company codes", D: "Material valuation price change", E: "Purchasing condition price change" },
+                correct: ["B", "C", "D"]
+            },
+            {
+                q: "You want to use split valuation for your refurbishing process to differentiate between materials based on the condition of the material. What do you need to consider for the accounting data of your material?",
+                note: null,
+                options: { A: "For the valuation area, the price control must be standard price.", B: "For each possible valuation type, the price control must be moving average price.", C: "For each possible valuation type, the price control must be standard price.", D: "For the valuation area, the price control must be moving average price." },
+                correct: ["D"]
+            },
+            {
+                q: "Which of the following actions are supported when you post a goods receipt to stock with reference to a purchase order?",
+                note: "Note: There are 3 correct answers to this question.",
+                options: { A: "Post a goods receipt for part of the order quantity", B: "Enter a value for the quantity received", C: "Post the quantity received to quality inspection stock", D: "Adjust the purchase order quantity to the goods receipt quantity", E: "Split the quantity received to multiple storage locations" },
+                correct: ["A", "B", "E"]
+            },
+            {
+                q: "What does the account assignment category control in a purchase requisition or purchasing document item?",
+                note: "Note: There are 2 correct answers to this question.",
+                options: { A: "Whether you must enter a material", B: "The type of account assignment object you must specify", C: "Whether you can post a goods receipt", D: "The item categories you are allowed to use" },
+                correct: ["B", "C"]
+            },
+            {
+                q: "How can you automatically update the conditions in an already created purchasing info record?",
+                note: null,
+                options: { A: "Select the Info Update indicator when maintaining a contract", B: "Select the Info Update indicator when creating a contract release order", C: "Select the Info Update indicator when maintaining a quotation", D: "Select the Info Update indicator when creating a purchase order" },
+                correct: ["C"] // Note: The correct answer in standard SAP is typically D (Purchase Order), but sticking to the provided source (C).
+            },
+            {
+                q: "What are some advantages of a stock transport order compared to a stock transfer posting between two plants?",
+                note: "Note: There are 3 correct answers to this question.",
+                options: { A: "You can post goods receipt in consignment.", B: "You can post goods receipt to consumption.", C: "You can create stock transport requisitions via MRP.", D: "You can issue from inspection stock.", E: "You can plan delivery costs." },
+                correct: ["B", "C", "E"]
+            },
+            {
+                q: "What must you do when using supplier consignment?",
+                note: "Note: There are 2 correct answers to this question.",
+                options: { A: "Create consignment storage locations", B: "Create consignment info records", C: "Settle liabilities resulting from consignment stock withdrawals", D: "Settle liabilities resulting from consignment stock receipts" },
+                correct: ["B", "C"]
+            },
+            {
+                q: "Which of the following are features of a subcontracting procurement process?",
+                note: "Note: There are 3 correct answers to this question.",
+                options: { A: "You can customize the control parameters for the subcontracting item category.", B: "You can have subcontracting purchase requisitions created by MRP.", C: "You can maintain the components to be provided in a bill of material.", D: "You can assign a subcontracting order item to an account.", E: "You can post a non-valuated goods receipt for a subcontracting order item." },
+                correct: ["B", "C", "D"]
+            },
+            {
+                q: "Which of the following steps can be part of a subcontracting process?",
+                note: "Note: There are 3 correct answers to this question.",
+                options: { A: "Purchase components for direct delivery to the subcontractor", B: "Invoice the subcontractor for consumed components", C: "Create an outbound delivery for components to be provided", D: "Create a sales order for components to be provided", E: "Post subsequent adjustment of component consumption" },
+                correct: ["A", "C", "E"]
+            },
+            {
+                q: "You enter a supplier invoice for a purchase order that has already been delivered. Apart from the purchase order itself, what can you use as a reference?",
+                note: "Note: There are 2 correct answers to this question.",
+                options: { A: "Goods receipt", B: "Inbound delivery", C: "Delivery note", D: "Bill of lading" },
+                correct: ["C", "D"]
+            },
+            {
+                q: "You have agreed on a value contract with a supplier for packaging. The exact materials and their purchase prices are NOT specified until the release orders. Which item category must you use when creating the contract?",
+                note: null,
+                options: { A: "W (Material group)", B: "M (Material unknown)", C: "B (Limit)", D: "T (Text)" },
+                correct: ["A"]
+            },
+            {
+                q: "You create a blanket purchase order for several minor repairs that may occur during the year. Which of the following data must you enter?",
+                note: "Note: There are 2 correct answers to this question.",
+                options: { A: "An invoicing plan type", B: "An account assignment category", C: "A net purchase order price", D: "An overall limit value" },
+                correct: ["B", "D"]
+            },
+            {
+                q: "In which of the following situations can document parking be used?",
+                note: "Note: There are 2 correct answers to this question.",
+                options: { A: "A goods receipt is posted for an item that needs a quality inspection.", B: "An EDI invoice containing variances is received.", C: "Account assignment information is missing for an invoice item.", D: "Account assignment information is missing for a purchase order item." },
+                correct: ["B", "C"]
+            },
+            {
+                q: "Blocking reason Quality is set for an item in an invoice. What could be the reason for this?",
+                note: "Note: There are 2 correct answers to this question.",
+                options: { A: "Goods-receipt-based invoice verification is NOT used and the item has the Post to Inspection Stock flag set in its material master.", B: "Goods-receipt-based invoice verification is used and NO usage decision has been made for the inspection lot for the item.", C: "Goods-receipt-based invoice verification is NOT used and NO usage decision has been made for any inspection lot for the item.", D: "Goods-receipt-based invoice verification is used and NO goods receipt has been posted for the item." },
+                correct: ["B", "C"]
+            },
+            {
+                q: "Which situations lead to an open item on the GR/IR clearing account?",
+                note: "Note: There are 2 correct answers to this question.",
+                options: { A: "The delivered quantity for a purchase order item is more than the invoiced quantity.", B: "The ordered quantity for a purchase order item is more than the delivered quantity.", C: "The invoiced quantity for a purchase order item is more than the delivered quantity.", D: "The ordered quantity for a purchase order item is more than the invoiced quantity." },
+                correct: ["A", "C"]
+            },
+            {
+                q: "In your company, you are posting an invoice with a cash discount amount using the posting gross method. What is the result of this in the system?",
+                note: null,
+                options: { A: "The cash discount amount is posted to a cash discount clearing account, which is cleared at the time of payment.", B: "The cash discount amount is posted from a cash discount clearing account to the stock account or cost account.", C: "The cash discount amount is NOT considered; it is only posted to a cash discount account when the payment is made.", D: "The cash discount amount is credited to the stock or cost account." },
+                correct: ["C"]
+            },
+            {
+                q: "What are some key features of purchase-order-based invoice verification?",
+                note: "Note: There are 2 correct answers to this question.",
+                options: { A: "Partial deliveries for a purchase order item show up as individual items in the invoice document.", B: "Partial deliveries for a purchase order item are NOT flagged as individual invoice items.", C: "The system proposes the quantity to be invoiced as the difference between the total delivered quantity and the total quantity already invoiced.", D: "The system proposes the total delivered quantity as the quantity to be invoiced." },
+                correct: ["B", "C"]
+            },
+            {
+                q: "You post an invoice with invoice reduction. What can you observe in the system?",
+                note: "Note: There are 2 correct answers to this question.",
+                options: { A: "Two accounting documents are created: one for the invoice posting and one for the credit memo posting.", B: "A message is created that can be issued to the supplier as a notification of a credit memo posting.", C: "The invoice is blocked for payment until the supplier confirms the credit memo receipt.", D: "Only one accounting document is created, containing both the invoice and the credit memo postings." },
+                correct: ["A", "B"]
+            },
+            {
+                q: "Where can you set the parameter that allows changing the account assignment data for a consumable material during invoice receipt?",
+                note: null,
+                options: { A: "In the material master of the consumable material", B: "In the account assignment category", C: "In the item category", D: "In the purchase order document type" },
+                correct: ["B"]
+            },
+            {
+                q: "Which card in the Procurement Overview app can you use to analyze the percentage of all purchase requisition items that require manual intervention during processing?",
+                note: null,
+                options: { A: "Purchase Requisition Item Types", B: "Purchase Requisition Touch Rate", C: "Monitor Purchase Requisition Items", D: "Non-Managed Spend" },
+                correct: ["B"]
+            },
+            {
+                q: "You want to identify the spend of purchase orders that do NOT have a contract reference, although an existing contract could have been used. What key performance indicator (KPI) provides this information?",
+                note: null,
+                options: { A: "Contract leakage", B: "Off-contract spend", C: "Unused contracts", D: "Purchase order value" },
+                correct: ["A"]
+            },
+            {
+                q: "What options are available for charts when analyzing a key performance indicator (KPI) report in Purchasing Analytics?",
+                note: "Note: There are 2 correct answers to this question.",
+                options: { A: "Export to a spreadsheet", B: "Import from a spreadsheet", C: "Change the dimensions that are shown", D: "Select the CDS view to be used" },
+                correct: ["A", "C"]
+            },
+            {
+                q: "What are some key features of the SAP Smart Business key performance indicator (KPI) tiles used for purchasing analytics?",
+                note: "Note: There are 2 correct answers to this question.",
+                options: { A: "Insight to Action provides drilldown capabilities and appropriate actions.", B: "When a tile is changed, the database is updated in real time.", C: "Smart alert thresholds can be set to update the tile display at different intervals.", D: "Smart controls, such as smart filter and smart charts, are available." },
+                correct: ["A", "D"]
+            },
+            {
+                q: "How can you personalize the Procurement Overview app?",
+                note: "Note: There are 3 correct answers to this question.",
+                options: { A: "Use your user settings to define which cards to show and hide", B: "Define your own layout and save it as a tile on the SAP Fiori launchpad", C: "Exchange a card with another card accessed by the same CDS view", D: "Filter the contents of all cards according to a specific supplier", E: "Use the drag-and-drop functionality to rearrange cards" },
+                correct: ["A", "D", "E"]
+            },
+            {
+                q: "What happens when you set the Freeze Book Inventory indicator in a physical inventory document header?",
+                note: null,
+                options: { A: "The system blocks all inventory management units of the physical inventory document for procurement.", B: "The book inventory is determined and fixed in the physical inventory document at the beginning of the count.", C: "The book inventory is determined and fixed in the physical inventory document at the time of the difference posting.", D: "The system blocks all inventory management units of the physical inventory document for goods movements." },
+                correct: ["C"]
+            },
+            {
+                q: "What are some of the consequences of setting the Delivery Completed indicator in a purchase order (PO) item?",
+                note: "Note: There are 2 correct answers to this question.",
+                options: { A: "Further goods receipts for the PO item are not expected but are possible.", B: "The PO item is no longer relevant for material requirements planning.", C: "The commitment for the PO item increases.", D: "The order quantity of the PO item is still open." },
+                correct: ["A", "B"]
+            },
+            {
+                q: "You want to manually post an initial entry of stock for a material in SAP S/4HANA. You want to enter both a quantity and an amount. How do you proceed?",
+                note: "Note: There are 2 correct answers to this question.",
+                options: { A: "On the SAP Fiori launchpad, use the Manage Stock app.", B: "On the SAP Fiori launchpad, use the Debit/Credit Inventory Values app.", C: "In the SAP GUI, use transaction MIGO.", D: "On the SAP Fiori launchpad, use the Post Goods Movement app." },
+                correct: ["A", "C"]
+            },
+            {
+                q: "Which of the following prerequisites must be met for the system to check the shelf life of materials at goods receipt?",
+                note: "Note: There are 2 correct answers to this question.",
+                options: { A: "The shelf life expiration date check is activated for the movement type in Customizing.", B: "The total shelf life is maintained in the purchasing info record.", C: "The purchase order item contains the remaining shelf life.", D: "The shelf life expiration date check is activated for the material type in Customizing." },
+                correct: ["A", "C"]
+            },
+            {
+                q: "What are some of the prerequisites to use a stock determination strategy for a material in inventory management?",
+                note: "Note: There are 3 correct answers to this question.",
+                options: { A: "Customize a cross-application strategy for stock determination", B: "Assign a stock determination strategy to the material type in Customizing", C: "Customize a stock determination rule and assign it to the storage type", D: "Assign a stock determination rule to the business transaction in Customizing", E: "Assign a stock determination group in the material master record" },
+                correct: ["A", "D", "E"]
+            },
+            {
+                q: "Which of the following does the movement type control?",
+                note: "Note: There are 3 correct answers to this question.",
+                options: { A: "Selection of the storage location at goods receipt", B: "Determination of the shipping point for deliveries", C: "Quantity and value updates when posting a goods movement", D: "Field selection when recording a goods movement", E: "Account determination for financial posting" },
+                correct: ["C", "D", "E"]
+            },
+            {
+                q: "How can you post a goods issue to a production order?",
+                note: "Note: There are 3 correct answers to this question.",
+                options: { A: "Manually, by setting the Final Issue indicator for the reservation", B: "Manually, as a planned goods issue with reference to a reservation", C: "Automatically, by using backflushing", D: "Periodically, on the basis of inventory differences", E: "Manually, as an unplanned goods issue, using movement type 261" },
+                correct: ["B", "C", "E"]
+            },
+            {
+                q: "You create a reservation manually. Which of the following options do you have?",
+                note: "Note: There are 2 correct answers to this question.",
+                options: { A: "You can set the Movement Allowed indicator per item.", B: "You can enter a different movement type for each item.", C: "You can specify a different account assignment object for each item.", D: "You can use an existing reservation as a reference." },
+                correct: ["A", "D"]
+            },
+            {
+                q: "You test the various options that SAP S/4HANA offers for stock transfers between two different plants within the same company code. Which of the following apply to stock transport orders?",
+                note: "Note: There are 3 correct answers to this question.",
+                options: { A: "You can post the goods issue from quality inspection stock in the supplying plant.", B: "You can enter delivery costs in the stock transport order.", C: "You can post the goods receipt to blocked stock in the receiving plant.", D: "Two accounting documents are created at the time of goods issue posting - one for each plant.", E: "The material on the road is managed as stock in transit in the receiving plant." },
+                correct: ["B", "C", "E"]
+            },
+            {
+                q: "Your MRP run detects a shortage of 2000 pieces for a material with an active quota arrangement. Each of your two suppliers can only supply 1000 pieces at once. What must you maintain to have MRP generate a procurement proposal for 1000 pieces for each supplier?",
+                note: "Note: There are 2 correct answers to this question.",
+                options: { A: "Set a maximum lot size in the quota arrangement item and select the 1x checkbox", B: "Assign a rounding profile in the material master record of the planned material", C: "Assign the indicator for quota splitting to the lot-sizing procedure being used", D: "Set a maximum quota quantity in the quota arrangement item for each supplier" },
+                correct: ["A", "C"]
+            },
+            {
+                q: "Which of the following SAP Fiori apps must you use to set up the following Situation Handling use case: Quantity Deficit in Supplier's Delivery?",
+                note: "Note: There are 2 correct answers to this question.",
+                options: { A: "Manage Situation Types", B: "Manage Teams and Responsibilities", C: "Manage Situation Objects", D: "Monitor Situations" },
+                correct: ["A", "B"]
+            },
+            {
+                q: "Which of the following can you control with the confirmation control key?",
+                note: "Note: There are 2 correct answers to this question.",
+                options: { A: "Whether a goods receipt needs to be confirmed", B: "Whether reminders for outstanding confirmations are required", C: "Whether a confirmation type is relevant for MRP", D: "Whether a confirmation type is a prerequisite for a goods receipt" },
+                correct: ["C", "D"]
+            },
+            {
+                q: "How can you completely block a material for procurement in a plant?",
+                note: "Note: There are 2 correct answers to this question.",
+                options: { A: "Create a blocking entry in the supplier master record", B: "Create a quota arrangement entry with a quantity of zero", C: "Use a relevant plant-specific material status in the material master", D: "Create an entry in the source list with a blocking indicator and NO supplier" },
+                correct: ["C", "D"]
+            },
+            {
+                q: "For which of the following business scenarios does a situation template exist in Situation Handling?",
+                note: "Note: There are 2 correct answers to this question.",
+                options: { A: "The due date for a blocked invoice has passed.", B: "A supplier confirmation is pending.", C: "A contract is ready as a source of supply.", D: "A purchase order approval is pending." },
+                correct: ["B", "D"]
+            },
+            {
+                q: "You have several valid purchasing info records for one specific material available in your system. What is the system behavior when you manually create a purchase requisition?",
+                note: null,
+                options: { A: "The system will choose the info record with the lowest price.", B: "The system will list all valid records and the user needs to select one.", C: "The system will list all valid records and propose the cheapest one.", D: "The system will choose the most recent info record." },
+                correct: ["C"] // The source states "Answer B OR C try C", I'll use C as the selected answer.
+            },
+            {
+                q: "You want to use automatic conversion of purchase requisitions into purchase orders for some raw materials. What are the prerequisites?",
+                note: "Note: There are 3 correct answers to this question.",
+                options: { A: "A contract with plant-specific conditions exists for the material and the vendor.", B: "The Automatic Purchase Order indicator is set in the plant-specific purchasing data of the material master record.", C: "The Automatic Purchase Order indicator is set in the purchasing data of the business partner master record.", D: "A source of supply containing valid conditions is assigned to the purchase requisition.", E: "A plant-specific source list entry exists for the material." },
+                correct: ["B", "C", "D"]
+            },
+            {
+                q: "Which of the following assignments can you configure?",
+                note: "Note: There are 2 correct answers to this question.",
+                options: { A: "The allowed item categories for each document type", B: "The allowed item categories for each account assignment category", C: "The allowed account assignment categories for each document type", D: "The allowed account assignment categories for each item category" },
+                correct: ["C", "D"]
+            },
+            {
+                q: "You send newly created purchase orders to a supplier via EDI, whereas quantity or price changes are transmitted by e-mail. What prerequisites must be met if you are using the condition technique for message determination?",
+                note: "Note: There are 3 correct answers to this question.",
+                options: { A: "The Price and Quantity fields are relevant for printout changes.", B: "The condition record contains the Price and Quantity fields.", C: "You have configured different message types for the New and Change print options.", D: "The dispatch time related to the change message needs to be set to 1 (send with periodically scheduled job).", E: "The New Message Determination Process for Change Messages indicator is flagged in Customizing." },
+                correct: ["C", "D", "E"]
+            },
+            {
+                q: "What can you control with a document type in purchasing?",
+                note: "Note: There are 3 correct answers to this question.",
+                options: { A: "Item number interval", B: "Number range", C: "Allowed item categories", D: "Confirmation control", E: "Allowed account assignment categories" },
+                correct: ["A", "B", "C"]
+            },
+            {
+                q: "In the standard system, a controllable system message is shown when a user creates a purchase order with a delivery date in the past. What must you configure to allow such purchase orders to only be created by authorized users?",
+                note: null,
+                options: { A: "Copy the system message to a new version. Set it as an error message. Assign the version with user parameter MSV to non-authorized users.", B: "Copy the system message to a new version. Set it as a warning message. Assign the version with user parameter MSV to the authorized users.", C: "Copy the system message to a new version. Set it as an error message. Assign the version with user parameter MSV to the authorized users.", D: "Copy the system message to a new version. Set it as a warning message. Assign the version with user parameter MSV to non-authorized users." },
+                correct: ["C"]
+            },
+            {
+                q: "For which of the following document categories can you perform an item-wise release in the flexible workflow for purchasing?",
+                note: null,
+                options: { A: "Purchase order", B: "Request for quotation", C: "Purchase requisition", D: "Scheduling agreement" },
+                correct: ["C"]
+            },
+            {
+                q: "At which level do you activate SAP S/4HANA output management for purchasing documents?",
+                note: null,
+                options: { A: "Application object", B: "Purchasing organization", C: "Document type", D: "Document category" },
+                correct: ["A"]
+            },
+            {
+                q: "Which of the following are prerequisites for flexible workflows for purchase order approval?",
+                note: "Note: There are 3 correct answers to this question.",
+                options: { A: "Set up the preconditions for the flexible workflow in the SAP Fiori app \"Manage Workflows for Purchase Order\"", B: "Activate the flexible workflow for purchase orders in Customizing", C: "Create a class with flexible workflow characteristics for purchase orders", D: "Deactivate the classic release procedure for purchase orders in Customizing", E: "Define the recipients for the flexible workflow in the SAP Fiori app \"Manage Workflows for Purchase Orders\"" },
+                correct: ["A", "B", "E"]
+            },
+            {
+                q: "In your project, you need to make sure that consignment purchase orders utilize a different number range than other purchase orders. What must you do?",
+                note: null,
+                options: { A: "Customize a new document category, assign a new number range, and assign the item category for consignment only to this category", B: "Customize a new document type, assign a new number range object, and assign the item category for consignment to this type", C: "Customize a new document category, assign a new number range object, and assign the item category for consignment only to this category", D: "Customize a new document type, assign a new number range, and assign the item category for consignment only to this type" },
+                correct: ["D"]
+            },
+            {
+                q: "How does SAP Fiori achieve the role-based design principle?",
+                note: "Note: There are 2 correct answers to this question.",
+                options: { A: "By defining SAP Fiori apps that users can tailor exactly to their needs", B: "By giving end users exactly what they need for their work", C: "By separating transactional and analytical apps in different business roles", D: "By decomposing big transactions into several discrete apps suited to the user's role" },
+                correct: ["B", "D"]
+            },
+            {
+                q: "What are the different types of SAP Fiori apps?",
+                note: "Note: There are 3 correct answers to this question.",
+                options: { A: "Interactive", B: "Transactional", C: "KPI report", D: "Analytical", E: "Fact sheet" },
+                correct: ["B", "D", "E"]
+            },
+            {
+                q: "Which of the following are possible personalization options of the SAP Fiori launchpad?",
+                note: "Note: There are 2 correct answers to this question.",
+                options: { A: "Add tile groups to business roles", B: "Add new catalogs", C: "Add tiles to existing tile groups", D: "Add new tile groups" },
+                correct: ["C", "D"]
+            },
+            {
+                q: "What is one difference between the SAP Fiori launchpad and the classical SAP graphical user interface (SAP GUI)?",
+                note: null,
+                options: { A: "The SAP Fiori launchpad can be personalized, while SAP GUI CANNOT be personalized.", B: "The SAP Fiori launchpad provides maintenance of favorites and file access, while SAP GUI only provides maintenance of favorites.", C: "The SAP Fiori launchpad is role-based, while SAP GUI often offers single complex transactions for many user roles.", D: "The SAP Fiori launchpad enables browser-based transactions, while SAP GUI does NOT." },
+                correct: ["C"]
+            },
+            {
+                q: "What are some SAP recommended guiding principles to achieve clean core operations?",
+                note: "Note: There are 3 correct answers to this question.",
+                options: { A: "Integrate clean core practices in the end-to-end value process chain.", B: "Establish an organizational structure, technical foundation, and transformation methodology for clean core.", C: "Define roles and responsibilities as part of a process transformation office.", D: "Establish release management.", E: "Establish regular housekeeping tasks and procedures." },
+                correct: ["A", "D", "E"]
+            },
+            {
+                q: "You are a consultant on an SAP S/4HANA Cloud brownfield project. Several mission critical business processes have been successfully remodeled in accordance with clean core principles. You must now create the necessary workflows. Which of the following SAP Signavio solutions can be used to create the workflows?",
+                note: null,
+                options: { A: "SAP Signavio Process Manager", B: "SAP Signavio Process Insights", C: "SAP Signavio Process Governance", D: "SAP Signavio Process Intelligence" },
+                correct: ["C"]
+            },
+            {
+                q: "You are a consultant on an SAP S/4HANA Cloud brownfield project. In a meeting the customer decides to remodel an existing business process in accordance with clean core principles. Which of the following SAP Signavio solutions can be used for the remodeling?",
+                note: null,
+                options: { A: "SAP Signavio Process Insights", B: "SAP Signavio Process Governance", C: "SAP Signavio Process Manager", D: "SAP Signavio Process Intelligence" },
+                correct: ["C"]
+            },
+            {
+                q: "Which of the following API types does SAP recommend to use to achieve clean core integrations?",
+                note: "Note: There are 2 correct answers to this question.",
+                options: { A: "OData", B: "IDoc", C: "SOAP", D: "RFC" },
+                correct: ["A", "C"]
+            }
+        ];
+
+        // Function to create the quiz structure
+        function createQuiz() {
+            const quizForm = document.getElementById('quizForm');
+            quizData.forEach((question, index) => {
+                const qNum = index + 1;
+                const type = question.correct.length > 1 ? 'checkbox' : 'radio';
+                
+                const block = document.createElement('div');
+                block.className = 'question-block';
+                block.id = `q-${qNum}`;
+
+                const text = document.createElement('div');
+                text.className = 'question-text';
+                text.innerHTML = `Question ${qNum}: ${question.q}`;
+                block.appendChild(text);
+
+                if (question.note) {
+                    const note = document.createElement('span');
+                    note.className = 'note';
+                    note.textContent = question.note;
+                    block.appendChild(note);
+                }
+
+                Object.keys(question.options).forEach(optionKey => {
+                    const optionText = question.options[optionKey];
+                    const label = document.createElement('label');
+                    label.className = 'option-label';
+                    
+                    const input = document.createElement('input');
+                    input.type = type;
+                    input.name = `q${qNum}`;
+                    input.value = optionKey;
+                    
+                    label.appendChild(input);
+                    label.appendChild(document.createTextNode(` ${optionKey}. ${optionText}`));
+                    block.appendChild(label);
+                });
+
+                quizForm.appendChild(block);
+            });
+        }
+
+        // Function to submit and evaluate the quiz
+        function submitQuiz() {
+            let score = 0;
+            const totalQuestions = quizData.length;
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '';
+            
+            quizData.forEach((question, index) => {
+                const qNum = index + 1;
+                const questionBlock = document.getElementById(`q-${qNum}`);
+                const correctAnswers = question.correct;
+                const isMultiSelect = correctAnswers.length > 1;
+                let userAnswers = [];
+
+                // Get user's selected options
+                if (isMultiSelect) {
+                    const checkedOptions = document.querySelectorAll(`#q-${qNum} input[type="checkbox"]:checked`);
+                    checkedOptions.forEach(input => userAnswers.push(input.value));
+                } else {
+                    const checkedOption = document.querySelector(`#q-${qNum} input[type="radio"]:checked`);
+                    if (checkedOption) {
+                        userAnswers.push(checkedOption.value);
+                    }
+                }
+                
+                // Compare user's answers with correct answers
+                const sortedUserAnswers = userAnswers.sort().join('');
+                const sortedCorrectAnswers = correctAnswers.sort().join('');
+
+                let isCorrect = sortedUserAnswers === sortedCorrectAnswers;
+
+                // Provide visual feedback and calculate score
+                questionBlock.classList.remove('correct', 'incorrect');
+                const feedbackDiv = document.createElement('div');
+                feedbackDiv.className = 'feedback';
+
+                if (isCorrect) {
+                    score++;
+                    questionBlock.classList.add('correct');
+                    feedbackDiv.innerHTML = '✅ **Correct!**';
+                } else {
+                    questionBlock.classList.add('incorrect');
+                    feedbackDiv.innerHTML = `❌ **Incorrect.**`;
+                    
+                    const yourAnswerDisplay = document.createElement('div');
+                    yourAnswerDisplay.className = 'your-answer-display';
+                    yourAnswerDisplay.innerHTML = `Your Answer(s): ${userAnswers.length > 0 ? userAnswers.join(', ') : 'None'}`;
+                    feedbackDiv.appendChild(yourAnswerDisplay);
+
+                    const correctAnswerDisplay = document.createElement('div');
+                    correctAnswerDisplay.className = 'correct-answer-display';
+                    correctAnswerDisplay.innerHTML = `Correct Answer(s): ${correctAnswers.join(', ')}`;
+                    feedbackDiv.appendChild(correctAnswerDisplay);
+                }
+                
+                // Append feedback to the question block
+                const existingFeedback = questionBlock.querySelector('.feedback');
+                if (existingFeedback) {
+                    questionBlock.removeChild(existingFeedback);
+                }
+                questionBlock.appendChild(feedbackDiv);
+                
+                // Disable all inputs after submission
+                questionBlock.querySelectorAll('input').forEach(input => {
+                    input.disabled = true;
+                });
+            });
+
+            // Display final score
+            resultsDiv.classList.remove('hidden');
+            resultsDiv.innerHTML = `<h2>Quiz Results</h2><p>You scored **${score}** out of **${totalQuestions}** (${((score / totalQuestions) * 100).toFixed(2)}%)</p>`;
+            
+            // Scroll to results
+            resultsDiv.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Initialize the quiz when the page loads
+        document.addEventListener('DOMContentLoaded', createQuiz);
+    </script>
+
+</body>
+</html>
